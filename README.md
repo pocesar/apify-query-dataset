@@ -109,9 +109,9 @@ then use directly inside your `query` ("2020-01-01" is passed as param to `param
 
 Most of the time, you won't need to use `customOperationSetup`, since the built-in operators can do a lot by themselves, but they are provided for completeness.
 
-## Expected Usage
+## Expected Comsumption
 
-The memory requirements should be low, but you need at least 256MB, the dataset items aren't loaded all at once in memory, but depending on the shape of your query, you may need more. The more query parameters you provide, more memory and CPU are required, subsequently your query finishes faster.
+The memory requirements should be really low, but you need at least 128MB, the dataset items aren't loaded all at once in memory, but depending on the shape of your query, you may need more. The more query parameters you provide, more memory and CPU are required, subsequently your query finishes faster.
 
 ## Limitations
 
@@ -129,7 +129,7 @@ E.g.:
 }
 ```
 
-Or you can use the `customOperationSetup`
+Or you can use the `customOperationSetup` and provide your advanced operator for native types.
 
 ## License
 

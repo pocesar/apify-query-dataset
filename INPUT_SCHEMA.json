@@ -50,7 +50,7 @@
             "description": "Setup custom operations for usage on queries",
             "type": "string",
             "prefill": "{}",
-            "example": "{\n\t$customMod(params, ownerQuery, options) {\n\t\treturn createEqualsOperation((value) => value % params === 0, ownerQuery, options)\n\t\t}\n}",
+            "example": "{\n\t$customMod(params, ownerQuery, options) {\n\t\treturn createEqualsOperation((value) => value % params === 0, ownerQuery, options)\n\t}\n}",
             "editor": "javascript"
         }
     },
