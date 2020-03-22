@@ -6,13 +6,12 @@ const vm = require('vm');
 const { log } = Apify.utils;
 
 /**
- * there's no other way to provide access to the local scope unless we use eval
- * we want
+ * There's no other way to provide access to the local scope unless we use eval
  *
  * @param {string} customOperationSetup
  */
-const evalSetup = async (customOperationSetup) => {
-    return eval(`(async () => { return ${customOperationSetup} })()`); // eslint-disable-line no-eval
+const evalSetup = (customOperationSetup) => {
+    return eval(`(() => { return (${customOperationSetup}); })()`); // eslint-disable-line no-eval
 };
 
 Apify.main(async () => {
@@ -91,7 +90,7 @@ Apify.main(async () => {
         let result;
 
         try {
-            result = await evalSetup(customOperationSetup);
+            result = evalSetup(customOperationSetup);
         } catch (e) {
             log.exception(e.message, 'customOperationSetup failed');
             return;
@@ -117,7 +116,11 @@ Apify.main(async () => {
     }
 
     available.filter = filter;
-    const filterMapFn = vm.compileFunction(filterMap, ['item', 'index', 'datasetIndex'], { parsingContext: parsingContext() });
+    const filterMapFn = vm.compileFunction(filterMap, ['item', 'index', 'datasetIndex'], {
+        parsingContext: parsingContext(),
+        filename: 'filterMap',
+
+    });
 
     let count = 0;
     let index = -1; // increment when we find something, starts at 0
