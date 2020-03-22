@@ -12,7 +12,7 @@ const { log } = Apify.utils;
  * @param {string} customOperationSetup
  */
 const evalSetup = async (customOperationSetup) => {
-    return eval(`(async () => { ${customOperationSetup} })()`); // eslint-disable-line no-eval
+    return eval(`(async () => { return ${customOperationSetup} })()`); // eslint-disable-line no-eval
 };
 
 Apify.main(async () => {

@@ -84,7 +84,7 @@ The `filterMap` parameter exists to do even more complex checks. `filterMap` is 
 The `customOperationSetup` is mostly useful to prepare a [custom operation](https://www.npmjs.com/package/sift#custom-operations) using `sift`:
 
 ```js
-return {
+{
     $gtDate(params, ownerQuery, options) {
         const timestamp = new Date(params).getTime();
 
