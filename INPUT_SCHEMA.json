@@ -1,0 +1,58 @@
+{
+    "title": "Query Dataset",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "datasetId": {
+            "title": "Dataset Id",
+            "description": "Provide your datasetId",
+            "type": "string",
+            "example": "McBNJRgkkYGgghKAG",
+            "editor": "textfield"
+        },
+        "query": {
+            "title": "Query",
+            "description": "Provide a MongoDB-like query using JSON",
+            "type": "object",
+            "example": {
+                "uniqueIdentifier": { "$regex": "^apify" },
+                "runCount": { "$gt": 100 }
+            },
+            "editor": "json"
+        },
+        "limit": {
+            "title": "Limit",
+            "description": "Limit how many items to get. If it's not provided, will return all found items",
+            "type": "integer",
+            "example": 1000,
+            "editor": "number",
+            "nullable": true
+        },
+        "offset": {
+            "title": "Offset",
+            "description": "Will slice the data from the provided offset. Can be used with 'Limit'. Defaults to 0",
+            "default": 0,
+            "example": 0,
+            "type": "integer",
+            "editor": "number"
+        },
+        "filterMap": {
+            "title": "Map and filter function",
+            "description": "Provide a map function, allows you to return modified data. Returning null or undefined don't output the item",
+            "type": "string",
+            "example": "if (index % 2 === 0) {\n return item;\n } else {\n console.log(filter(index));\n }",
+            "editor": "javascript"
+        },
+        "customOperationSetup": {
+            "title": "Custom operations setup",
+            "description": "Setup custom operations for usage on queries",
+            "type": "string",
+            "example": "return {\n $customMod(params, ownerQuery, options) {\n  return createEqualsOperation(...)\n }\n }",
+            "editor": "javascript"
+        }
+    },
+    "required": [
+        "datasetId",
+        "query"
+    ]
+}

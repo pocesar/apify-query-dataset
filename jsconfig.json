@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+      "target": "es2018",
+      "module": "commonJS",
+      "allowSyntheticDefaultImports": false,
+      "esModuleInterop": false,
+      "alwaysStrict": true,
+      "moduleResolution": "node",
+      "strict": true,
+      "strictNullChecks": true,
+      "checkJs": true,
+      "resolveJsonModule": true,
+      "lib": [
+        "dom",
+        "es2020.string",
+        "es2020.promise",
+        "es2019.array",
+        "es2018.asynciterable",
+        "dom.iterable"
+      ],
+      "noImplicitAny": true
+    },
+    "include": [
+      "./src/*.js"
+    ]
+  }
