@@ -47,7 +47,7 @@
             "title": "Custom operations setup",
             "description": "Setup custom operations for usage on queries",
             "type": "string",
-            "example": "return {\n $customMod(params, ownerQuery, options) {\n  return createEqualsOperation(...)\n }\n }",
+            "example": "{\n $customMod(params, ownerQuery, options) {\n  return createEqualsOperation(...)\n }\n }",
             "editor": "javascript"
         }
     },
