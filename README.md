@@ -73,13 +73,13 @@ Your generated dataset is now:
 
 The `filterMap` parameter exists to do even more complex checks. `filterMap` is run in a limited context, and those are the variables available inside your function:
 
-`sift`: the [sift](https://www.npmjs.com/package/sift) module, so you can create a filter on-the-fly
-`console.log`: tied to the 'outside' `console.log` and outputs information to the actor log
-`item`: the current dataset item
-`index`: the current filtered index
-`total`: total items available in the dataset
-`filter`: the created filter from `query` parameter
-`datasetIndex`: the current position in the dataset index
+* `sift`: the [sift](https://www.npmjs.com/package/sift) module, so you can create a filter on-the-fly
+* `console.log`: tied to the 'outside' `console.log` and outputs information to the actor log
+* `item`: the current dataset item
+* `index`: the current filtered index
+* `total`: total items available in the dataset
+* `filter`: the created filter from `query` parameter
+* `datasetIndex`: the current position in the dataset index
 
 The `customOperationSetup` is mostly useful to prepare a [custom operation](https://www.npmjs.com/package/sift#custom-operations) using `sift`:
 
