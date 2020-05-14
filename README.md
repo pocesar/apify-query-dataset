@@ -48,7 +48,7 @@ Now say you want to rename the "name" field to something else:
     "query": {
         "name": { "$ne": "" }
     },
-    "filterMap": "item.name = item.name.replace('Name ', ''); item.extra = true; return item;"
+    "filterMap": "({ item }) => { item.name = item.name.replace('Name ', ''); item.extra = true; return item; }"
 }
 ```
 
@@ -84,7 +84,7 @@ The `filterMap` parameter exists to do even more complex checks. `filterMap` is 
 The `customOperationSetup` is mostly useful to prepare a [custom operation](https://www.npmjs.com/package/sift#custom-operations) using `sift`:
 
 ```js
-{
+() => ({
     $gtDate(params, ownerQuery, options) {
         const timestamp = new Date(params).getTime();
 
@@ -94,7 +94,7 @@ The `customOperationSetup` is mostly useful to prepare a [custom operation](http
             options
         );
     }
-}
+})
 ```
 
 then use directly inside your `query` ("2020-01-01" is passed as param to `params`):
@@ -125,7 +125,7 @@ E.g.:
     "query": {
 
     },
-    "filterMap": "if (new Date(item.someDateField).getTime() < new Date(2019, 10, 20)) { return item }"
+    "filterMap": "({ item }) => { if (new Date(item.someDateField).getTime() < new Date(2019, 10, 20)) { return item } }"
 }
 ```
 

@@ -31,26 +31,27 @@
         },
         "offset": {
             "title": "Offset",
-            "description": "Will slice the data from the provided offset. Can be used with 'Limit'. Defaults to 0",
+            "description": "Will slice the data from the provided offset. The offset is relative to queried items. Can be used with 'Limit'. Defaults to 0",
             "default": 0,
             "example": 0,
             "type": "integer",
-            "editor": "number"
+            "editor": "number",
+            "nullable": true
         },
         "filterMap": {
             "title": "Map and filter function",
             "description": "Provide a map function, allows you to return modified data. Returning null or undefined on this function filter the item from the output",
             "type": "string",
-            "prefill": "return item;",
-            "example": "if (index % 2 === 0) {\n\treturn item;\n} else {\n\tconsole.log(filter(index));\n}",
+            "prefill": "({ item, index, datasetIndex }) => item",
+            "example": "({ item, index }) => {\n\tif (index % 2 === 0) {\n\t\treturn item;\n\t} else {\n\t\tconsole.log(filter(index));\n\t}\n}",
             "editor": "javascript"
         },
         "customOperationSetup": {
             "title": "Custom operations setup",
             "description": "Setup custom operations for usage on queries",
             "type": "string",
-            "prefill": "{}",
-            "example": "{\n\t$customMod(params, ownerQuery, options) {\n\t\treturn createEqualsOperation((value) => value % params === 0, ownerQuery, options)\n\t}\n}",
+            "prefill": "() => ({})",
+            "example": "() => ({\n\t$customMod(params, ownerQuery, options) {\n\t\treturn createEqualsOperation((value) => value % params === 0, ownerQuery, options)\n\t}\n})",
             "editor": "javascript"
         }
     },

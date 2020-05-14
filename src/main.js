@@ -14,7 +14,7 @@ const evalSetup = (customOperationSetup) => {
     if (!customOperationSetup) {
         return {};
     }
-    return eval(`(() => { return (${customOperationSetup}); })()`); // eslint-disable-line no-eval
+    return eval(`(${customOperationSetup})()`); // eslint-disable-line no-eval
 };
 
 Apify.main(async () => {
@@ -22,7 +22,7 @@ Apify.main(async () => {
     const {
         datasetId,
         query,
-        filterMap = 'return item',
+        filterMap = '({ item }) => item',
         customOperationSetup = null,
     } = input;
 
@@ -119,11 +119,10 @@ Apify.main(async () => {
     }
 
     available.filter = filter;
-    const filterMapFn = vm.compileFunction(filterMap, ['item', 'index', 'datasetIndex'], {
+    const filterMapFn = vm.compileFunction(`return ${filterMap}`, [], {
         parsingContext: parsingContext(),
         filename: 'filterMap',
-
-    });
+    })();
 
     let count = 0;
     let index = -1; // increment when we find something, starts at 0
@@ -144,7 +143,7 @@ Apify.main(async () => {
                 try {
                     // a filterMap means that null or undefined get's filtered out
                     // the result must be either an array or object
-                    filtered = await filterMapFn(item, index, datasetIndex);
+                    filtered = await filterMapFn({ item, index, datasetIndex });
                 } catch (e) {
                     log.exception(e.message, 'filterMap failed', { index, datasetIndex });
                     return;
@@ -159,7 +158,7 @@ Apify.main(async () => {
                             throw new Error('break');
                         }
                     } else {
-                        log.warning('Return value of filterMap is not an object or array', { index, datasetIndex, filtered });
+                        log.warning(`Return value of filterMap is not an "object" or "array", got "${typeof filtered}"`, { index, datasetIndex, filtered });
                     }
                 }
             }
