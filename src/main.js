@@ -17,6 +17,78 @@ const evalSetup = (customOperationSetup) => {
     return eval(`(${customOperationSetup})()`); // eslint-disable-line no-eval
 };
 
+
+/**
+ * Intervaled dataset.pushData and provide a way to deduplicate
+ * while pushing, by using a key.
+ *
+ * Saves the pending items to the KV in case of migration
+ *
+ * @param {Apify.Dataset} dataset
+ * @param {number} [limit]
+ */
+const intervalPushData = async (dataset, limit = 50000) => {
+    const data = new Map(await Apify.getValue('PENDING_PUSH'));
+    await Apify.setValue('PENDING_PUSH', []);
+    let shouldPush = true;
+
+    /** @type {any} */
+    let timeout;
+
+    const timeoutFn = async () => {
+        if (shouldPush && data.size >= limit) {
+            const dataToPush = [...data.values()];
+            data.clear();
+            await dataset.pushData(dataToPush);
+        }
+
+        timeout = setTimeout(timeoutFn, 10000);
+    };
+
+    Apify.events.on('migrating', async () => {
+        shouldPush = false;
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        await Apify.setValue('PENDING_PUSH', [...data.entries()]);
+    });
+
+    await timeoutFn();
+
+    return {
+        /**
+         * Synchronous pushData
+         *
+         * @param {string} key
+         * @param {any} item
+         * @returns {boolean} Returns true if the item is new
+         */
+        pushData(key, item) {
+            const isNew = !data.has(key);
+            data.set(key, item);
+            return isNew;
+        },
+        /**
+         * Flushes any remaining items on the pending array.
+         * Call this after await crawler.run()
+         */
+        async flush() {
+            shouldPush = false;
+
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+
+            const dataToPush = [...data.values()];
+
+            while (dataToPush.length) {
+                await Apify.pushData(dataToPush.splice(0, limit));
+                await Apify.utils.sleep(1000);
+            }
+        },
+    };
+};
+
 Apify.main(async () => {
     const input = await Apify.getInput();
     const {
@@ -24,6 +96,8 @@ Apify.main(async () => {
         query,
         filterMap = '({ item }) => item',
         customOperationSetup = null,
+        deduplicationKey,
+        bufferLimit = 50000,
     } = input;
 
     if (!datasetId) {
@@ -129,7 +203,11 @@ Apify.main(async () => {
 
     log.info(`Starting querying ${datasetInfo.itemCount} dataset items...`);
 
+    const { flush, pushData } = await intervalPushData(await Apify.openDataset(), bufferLimit);
+
     try {
+        let incrementingKey = 0;
+
         await dataset.forEach(async (item, datasetIndex) => {
             if (filter(item)) {
                 index++;
@@ -152,13 +230,27 @@ Apify.main(async () => {
                 if (filtered !== null && filtered !== undefined) {
                     if (typeof filtered === 'object') {
                         count++;
-                        await Apify.pushData(filtered);
+                        let key = incrementingKey++;
+
+                        if (deduplicationKey) {
+                            if (deduplicationKey in item) {
+                                key = item[deduplicationKey];
+                            } else {
+                                log.warning('deduplicationKey not found in item', { index, datasetIndex, deduplicationKey });
+                            }
+                        }
+
+                        pushData(`${key}`, filtered);
 
                         if (count >= limit) {
                             throw new Error('break');
                         }
                     } else {
-                        log.warning(`Return value of filterMap is not an "object" or "array", got "${typeof filtered}"`, { index, datasetIndex, filtered });
+                        log.warning(`Return value of filterMap is not an "object" or "array", got "${typeof filtered}"`, {
+                            index,
+                            datasetIndex,
+                            filtered,
+                        });
                     }
                 }
             }
@@ -169,6 +261,8 @@ Apify.main(async () => {
         if (e.message !== 'break') {
             log.exception(e);
         }
+    } finally {
+        await flush();
     }
 
     console.timeEnd(c);

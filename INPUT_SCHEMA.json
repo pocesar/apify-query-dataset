@@ -53,6 +53,21 @@
             "prefill": "() => ({})",
             "example": "() => ({\n\t$customMod(params, ownerQuery, options) {\n\t\treturn createEqualsOperation((value) => value % params === 0, ownerQuery, options)\n\t}\n})",
             "editor": "javascript"
+        },
+        "deduplicationKey": {
+            "title": "De-duplication key",
+            "description": "Key on each item to serve as a deduplication",
+            "example": "id",
+            "type": "string",
+            "editor": "textfield",
+            "nullable": true
+        },
+        "bufferLimit": {
+            "title": "Buffer limit",
+            "description": "How many items to buffer in memory before pushing to the dataset",
+            "default": 50000,
+            "type": "integer",
+            "editor": "number"
         }
     },
     "required": [
