@@ -102,13 +102,13 @@ Apify.main(async () => {
         let incrementingKey = 0;
 
         const processItems = async (items, { datasetId, datasetOffset }) => {
-            let datasetIndex = -1;
+            let datasetIndex = datasetOffset - 1;
             for (const item of items) {
                 datasetIndex++;
                 if (filter(item)) {
                     index++;
                     if (index < offset) {
-                        return;
+                        continue;
                     }
 
                     let filtered;
@@ -116,9 +116,9 @@ Apify.main(async () => {
                     try {
                         // a filterMap means that null or undefined get's filtered out
                         // the result must be either an array or object
-                        filtered = await filterMapFn({ item, index, datasetIndex: datasetOffset + datasetIndex });
+                        filtered = await filterMapFn({ item, index, datasetIndex});
                     } catch (e) {
-                        log.exception(e.message, 'filterMap failed', { index, datasetIndex: datasetOffset + datasetIndex });
+                        log.exception(e.message, 'filterMap failed', { index, datasetIndex });
                         continue;
                     }
 
@@ -131,7 +131,7 @@ Apify.main(async () => {
                                 if (deduplicationKey in item) {
                                     key = item[deduplicationKey];
                                 } else {
-                                    log.warning('deduplicationKey not found in item', { index, datasetIndex: datasetOffset + datasetIndex, deduplicationKey });
+                                    log.warning('deduplicationKey not found in item', { index, datasetIndex, deduplicationKey });
                                 }
                             }
 
@@ -150,7 +150,7 @@ Apify.main(async () => {
                         } else {
                             log.warning(`Return value of filterMap is not an "object" or "array", got "${typeof filtered}"`, {
                                 index,
-                                datasetIndex: datasetOffset + datasetIndex,
+                                datasetIndex,
                                 filtered,
                             });
                         }
