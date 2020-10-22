@@ -3,7 +3,9 @@
 	"version": "1.0.0",
 	"description": "Query your existing datasets, map and generate a subset of your data",
 	"dependencies": {
+		"@types/bluebird": "^3.5.32",
 		"apify": "^0.21.4",
+		"bluebird": "^3.7.2",
 		"sift": "^13.3.1"
 	},
 	"devDependencies": {
